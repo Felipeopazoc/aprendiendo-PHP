@@ -1,0 +1,8 @@
+
+
+<?php 
+
+    $conexion = pg_
+
+
+?>

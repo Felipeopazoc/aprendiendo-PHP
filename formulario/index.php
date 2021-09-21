@@ -1,33 +1,45 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de contacto</title>
-</head>
-<body>
-    <div class="main-container">
-        <h1>Formulario de contacto</h1>
-        <form action="recibe.php" method = "GET">
-            <input autocomplete = "off" type="text" placeholder="Nombre:" name="nombre">
-            <br>
-            <label for="hombre">Hombre</label>
-            <input type="radio" name="sexo" id="hombre" value="hombre">
-            
-            <label for="mujer">Mujer</label>
-            <input type="radio" name="sexo" id="mujer" value="mujer">
-            <br>
+<?php
+    $enviado = '';
+    $errores = '';
+    if(isset($_POST['submit'])){
+        $nombre = $_POST["nombre"];
+        $correo = $_POST["correo"];
+        $mensaje = $_POST["mensaje"];
+        if(!empty($nombre)){
+            $nombre = trim($nombre);
+            $nombre = filter_var($nombre,FILTER_SANITIZE_STRING);
+        }else{
+            $errores.= 'Por favor ingresa un nombre <br>';
+        }
+        if(!empty($correo)){
+            $correo = filter_var($correo,FILTER_SANITIZE_EMAIL);
+            if(!filter_var($correo,FILTER_VALIDATE_EMAIL)){
+                $errores .= "Ingrese un Email Válido <br>";
+            }
+        }else{
+            $errores .= "Por favor ingresa un correo <br>";
+        }
 
-            <select name="year" id="year">
-                <?php 
-                for($i=1950;$i<=2021;$i++){
-                    echo "<option value = $i>$i</option>";
-                }  
-                ?>
-            </select>
-            <input type="submit" value ="Enviar">
-        </form>
-    </div>
-</body>
-</html>
+        if(!empty($mensaje)){
+            $mensaje = htmlspecialchars($mensaje);
+            $mensaje = trim($mensaje);
+            $mensaje = stripslashes($mensaje);
+        }else{
+            $errores .= "Por favor ingresa el mensaje";
+        }
+        if(!$errores){
+            $enviar_a = 'tunombre@empresa.com';
+            $asunto = "Correo enviad desde mi pagina.com";
+            $mensaje_preparado = "De: $nombre\n";
+            $mensaje_preparado.= "Correo: $correo\n";
+            $mensaje_preparado.= "Mensaje: ".$mensaje;
+
+            //mail($enviar_a,$asunto,$mensaje_preparado);
+            $enviado = true;
+        }
+
+    }
+
+    require 'index.view.php';
+
+?>
